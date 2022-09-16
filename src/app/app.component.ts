@@ -7,15 +7,21 @@ import { WebsocketService } from './services/websocket.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent implements OnInit{
-  title = 'basico';
+export class AppComponent implements OnInit {
 
   constructor(
     public swService: WebsocketService,
-    public chatServices : ChatService
-    ){}
+    public chatService :ChatService
+    ) { }
+
+  //siempre se escuche este servicio 
   ngOnInit(): void {
-  
+
+
+    this.chatService.getMessagesPrivate().subscribe((msg)=>{
+      console.log(msg);
+    });
   }
+
 
 }

@@ -8,9 +8,10 @@ import { Usuario } from '../class/usuario';
 export class WebsocketService {
 
   public socketStatus = false;
-  public usuario!: Usuario ;
+  public usuario!: Usuario  ;
   constructor(private socket: Socket) {
     this.checkStatus()
+    this.cargarStorage();
   }
 
   //Detecta cuando se tiene conexion al servidor y cuando se pierde
@@ -42,9 +43,32 @@ export class WebsocketService {
   }
 
   loginws(nombre: string){
-    console.log('Configurando el usuario:', nombre)
-    this.socket.emit('configurar-usuario', {nombre},(resp:any)=>{
-      console.log(resp);
-    })
+    return new Promise<void>((resolve, reject)=>{
+      console.log('Configurando el usuario:', nombre)
+      this.emit('configurar-usuario', {nombre},(resp:any)=>{
+       
+        console.log(resp)
+        this.usuario = new Usuario(nombre);
+        this.guardarStorage()
+        resolve();
+        
+      });
+    });
+  }
+
+
+  getUsuario(){
+    return this.usuario;
+  }
+
+  guardarStorage(){
+    localStorage.setItem('usuario', JSON.stringify(this.usuario))
+  }
+
+  cargarStorage(){
+    if(localStorage.getItem('usuario')){
+      this.usuario = JSON.parse(localStorage.getItem('usuario')!)
+      this.loginws(this.usuario.nombre)
+    }
   }
 }
